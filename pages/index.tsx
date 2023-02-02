@@ -1,6 +1,13 @@
 import Head from 'next/head';
+import { Button } from '@mui/material';
 
 export default function Home() {
+  function test() {
+    fetch('/api/test')
+      .then((res) => res.json)
+      .then((data) => console.log(data));
+  }
+
   return (
     <>
       {/*todo : 헤드 컴포넌트로 분리하기*/}
@@ -10,7 +17,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main></main>
+      <main>
+        <Button onClick={test}>test</Button>
+      </main>
     </>
   );
 }

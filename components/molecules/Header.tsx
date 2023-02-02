@@ -39,7 +39,13 @@ const Header = () => {
         <Link href="/projects">PROJECT</Link>
         <Link href="/blog">BLOG</Link>
       </Box>
-      <Button size="large" variant="contained">
+      <Button
+        size="large"
+        href="/auth/signin"
+        component="a"
+        LinkComponent={NextLink}
+        variant="contained"
+      >
         로그인
       </Button>
     </Box>
