@@ -1,16 +1,23 @@
-import bcrypt from 'bcrypt';
-import promisePool from '../config/db/db';
+import bcrypt, { compare } from 'bcrypt';
+import { PoolConnection } from 'mysql2/promise';
+import { DBUser } from '../api-conn/user/type';
 
-export async function isExists(id: string) {
-  const [rows, field] = await promisePool.query(
-    'select * from user where username= ?;',
-    [id],
-  );
+export async function findUserById(id: string, conn: PoolConnection): DBUser {
+  const [rows] = await conn.query('select * from user where username= ?;', [
+    id,
+  ]);
 
-  return rows.length !== 0;
+  console.log(rows);
+  return rows;
 }
 
 export async function hashPassword(password: string) {
   const hashedPassword = await bcrypt.hash(password, 12);
+
   return hashedPassword;
+}
+
+export async function verifyPassword(password: string, hashedPassword: string) {
+  const isValid = await compare(password, hashedPassword);
+  return isValid;
 }

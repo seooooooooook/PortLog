@@ -1,13 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { hashPassword, isExists } from '../../../lib/auth';
-import promisePool from '../../../config/db/db';
-
-export interface user {
-  id: string;
-  password: string;
-  name: string;
-  phone: string;
-}
+import promisePool from '../../../db-conn/db';
+import { Connection } from 'mysql2';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -15,6 +9,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
   const data = req.body;
   const { id, password, name, phone } = data;
+
+  const conn: Connection = promisePool.getConnection(
+    async (conn: Connection) => conn,
+  );
 
   if (!id) {
     res.status(422).json({ message: '유효하지 않은 아이디입니다.' });
@@ -24,7 +22,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.status(422).json({ message: '유효하지 않은 패스워드입니다.' });
     return;
   }
-  const isExist = await isExists(id);
+  const isExist = await isExists(id, conn);
   if (isExist) {
     res.status(422).json({ message: '이미 존재하는 아이디입니다.' });
     return;
@@ -32,7 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const hashedPassword = await hashPassword(password);
 
-  const result = await promisePool.query(
+  const result = await conn.query(
     'insert into user(username, password, name, phone) values(?, ?, ?, ?)',
     [id, hashedPassword, name, phone],
   );

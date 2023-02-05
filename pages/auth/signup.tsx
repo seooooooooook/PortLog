@@ -12,7 +12,7 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Link from 'next/link';
 import { useState } from 'react';
-import { signUp } from '../../conn/user';
+import { signUp } from 'api-conn/user';
 
 function Copyright(props: any) {
   return (
