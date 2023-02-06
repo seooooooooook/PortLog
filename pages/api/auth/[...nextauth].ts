@@ -1,23 +1,20 @@
-import NextAuth, { User } from 'next-auth';
+import NextAuth from 'next-auth';
 import Providers from 'next-auth/providers';
-import { PoolConnection } from 'mysql2/promise';
-import promisePool from 'db-conn/db';
 import { NextApiRequest } from 'next-auth/internals/next';
-import { Awaitable } from 'next-auth/internals/utils';
 import { findUserById, verifyPassword } from 'lib/auth';
 import { DBUser } from 'api-conn/user/type';
 
 export default NextAuth({
+  session: {
+    jwt: true,
+  },
   providers: [
     Providers.Credentials({
       async authorize(
         credentials: Record<keyof DBUser, string>,
         req: NextApiRequest,
-      ): Awaitable<User | null> {
-        const conn = promisePool.getConnection(
-          async (conn: PoolConnection) => conn,
-        );
-        const user = await findUserById(credentials.id, conn);
+      ): Promise<{ id: string }> {
+        const [user] = await findUserById(credentials.id);
         if (!user) {
           throw new Error('존재하지 않는 유저입니다.');
         }
@@ -25,6 +22,8 @@ export default NextAuth({
           credentials.password,
           user.password,
         );
+        if (!isValid) throw new Error('유효하지 않은 사용자입니다.');
+        return { id: user.id };
       },
     }),
   ],

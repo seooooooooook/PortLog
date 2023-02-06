@@ -2,8 +2,11 @@ import React from 'react';
 import { Box, Button } from '@mui/material';
 import { Link } from 'components/Atom';
 import NextLink from 'next/link';
+import { useSession } from 'next-auth/client';
 
 const Header = () => {
+  const [session, loading] = useSession();
+
   return (
     <Box
       component="nav"
@@ -39,15 +42,28 @@ const Header = () => {
         <Link href="/projects">PROJECT</Link>
         <Link href="/blog">BLOG</Link>
       </Box>
-      <Button
-        size="large"
-        href="/auth/signin"
-        component="a"
-        LinkComponent={NextLink}
-        variant="contained"
-      >
-        로그인
-      </Button>
+      {session ? (
+        <Button
+          size="large"
+          href="/auth/signin"
+          component="a"
+          LinkComponent={NextLink}
+          variant="contained"
+          //todo : 로그아웃 기능 추가
+        >
+          로그아웃
+        </Button>
+      ) : (
+        <Button
+          size="large"
+          href="/auth/signin"
+          component="a"
+          LinkComponent={NextLink}
+          variant="contained"
+        >
+          로그인
+        </Button>
+      )}
     </Box>
   );
 };

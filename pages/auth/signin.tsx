@@ -8,11 +8,12 @@ import {
   Box,
   Typography,
   Container,
-  useTheme,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+//클라이언트 로그인 요청
+import { signIn } from 'next-auth/client';
 import Link from 'next/link';
+import { useState } from 'react';
 
 function Copyright(props: any) {
   return (
@@ -30,13 +31,19 @@ function Copyright(props: any) {
 }
 
 export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const [id, setId] = useState<string>('');
+  const [pw, setPw] = useState<string>('');
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    if (id !== '' && pw !== '') {
+      const result = await signIn('credentials', {
+        redirect: false,
+        id: id,
+        password: pw,
+      });
+      console.log(result);
+    }
   };
 
   return (
@@ -63,6 +70,8 @@ export default function SignIn() {
             fullWidth
             id="username"
             label="아이디"
+            value={id}
+            onChange={(e) => setId(e.target.value)}
             name="username"
             autoComplete="username"
             autoFocus
@@ -73,6 +82,8 @@ export default function SignIn() {
             fullWidth
             name="password"
             label="비밀번호"
+            value={pw}
+            onChange={(e) => setPw(e.target.value)}
             type="password"
             id="password"
             autoComplete="current-password"

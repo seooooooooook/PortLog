@@ -1,13 +1,13 @@
 import bcrypt, { compare } from 'bcrypt';
-import { PoolConnection } from 'mysql2/promise';
 import { DBUser } from '../api-conn/user/type';
+import promisePool from '../db-conn/db';
 
-export async function findUserById(id: string, conn: PoolConnection): DBUser {
-  const [rows] = await conn.query('select * from user where username= ?;', [
-    id,
-  ]);
+export async function findUserById(id: string): Promise<Array<DBUser>> {
+  const [rows] = await promisePool.query(
+    'select * from user where username= ?;',
+    [id],
+  );
 
-  console.log(rows);
   return rows;
 }
 
@@ -19,5 +19,6 @@ export async function hashPassword(password: string) {
 
 export async function verifyPassword(password: string, hashedPassword: string) {
   const isValid = await compare(password, hashedPassword);
+  console.log(isValid);
   return isValid;
 }
