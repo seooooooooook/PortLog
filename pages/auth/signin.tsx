@@ -11,9 +11,14 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 //클라이언트 로그인 요청
-import { signIn } from 'next-auth/client';
+import { getSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import KakaoAuthButton from 'components/Atom/KakaoAuthButton';
+import { getServerSession } from 'next-auth';
+import { authOption } from '../api/auth/[...nextauth]';
+import { GetServerSidePropsContext } from 'next';
 
 function Copyright(props: any) {
   return (
@@ -30,9 +35,30 @@ function Copyright(props: any) {
   );
 }
 
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOption);
+
+  if (session) {
+    return {
+      props: { session },
+      redirect: {
+        destination: '/',
+        permanent: true,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}
+
 export default function SignIn() {
+  const router = useRouter();
   const [id, setId] = useState<string>('');
   const [pw, setPw] = useState<string>('');
+
+  const isEnable = useMemo(() => id === '' || pw === '', [id, pw]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,7 +68,10 @@ export default function SignIn() {
         id: id,
         password: pw,
       });
-      console.log(result);
+
+      if (!result?.error) {
+        router.replace('/');
+      }
     }
   };
 
@@ -92,10 +121,12 @@ export default function SignIn() {
             type="submit"
             fullWidth
             variant="contained"
+            disabled={isEnable}
             sx={{ mt: 3, mb: 2 }}
           >
             로그인
           </Button>
+          <KakaoAuthButton></KakaoAuthButton>
           <Grid container>
             <Grid item>
               <Link href="/auth/signup">계정이 없습니까? 회원가입</Link>

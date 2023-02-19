@@ -2,10 +2,13 @@ import React from 'react';
 import { Box, Button } from '@mui/material';
 import { Link } from 'components/Atom';
 import NextLink from 'next/link';
-import { useSession } from 'next-auth/client';
+import { signOut } from 'next-auth/react';
+import Logo from 'components/Atom/Logo';
+import { User } from 'next-auth';
 
-const Header = () => {
-  const [session, loading] = useSession();
+const Header = (props: { user: User | null }) => {
+  const { user } = props;
+  const logoutHandler = () => signOut();
 
   return (
     <Box
@@ -13,43 +16,39 @@ const Header = () => {
       height="100px"
       sx={{
         width: '100%',
-        position: 'absolute',
+        position: 'sticky',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         px: '30px',
       }}
     >
-      <Button
-        sx={{ fontSize: '36px' }}
-        href="/"
-        component="a"
-        LinkComponent={NextLink}
-      >
-        SEOK'S PORT
-      </Button>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: 'flex',
-          gap: '9px',
-        }}
-      >
-        <Link href="/profile">PROFILE</Link>
-        <Link href="/projects">PROJECT</Link>
-        <Link href="/blog">BLOG</Link>
-      </Box>
-      {session ? (
+      <Logo username={user?.name || null} />
+      {user ? (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            gap: '9px',
+          }}
+        >
+          <Link href={`/${user.name}/profile`}>PROFILE</Link>
+          <Link href={`/${user.name}/projects`}>PROJECT</Link>
+          <Link href={`/${user.name}/blog`}>BLOG</Link>
+        </Box>
+      ) : null}
+
+      {user ? (
         <Button
           size="large"
           href="/auth/signin"
           component="a"
           LinkComponent={NextLink}
           variant="contained"
-          //todo : 로그아웃 기능 추가
+          onClick={logoutHandler}
         >
           로그아웃
         </Button>

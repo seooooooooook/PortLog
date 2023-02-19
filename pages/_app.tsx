@@ -1,4 +1,6 @@
 import type { AppProps } from 'next/app';
+import { SessionProvider } from 'next-auth/react';
+
 import { CssBaseline, ThemeProvider, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 import { darkTheme, lightTheme } from 'theme';
@@ -14,9 +16,11 @@ export default function App(props: AppProps) {
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Component {...pageProps} />
-    </ThemeProvider>
+    <SessionProvider session={pageProps.session}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Component {...pageProps} />
+      </ThemeProvider>
+    </SessionProvider>
   );
 }

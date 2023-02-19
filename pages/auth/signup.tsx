@@ -11,8 +11,11 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { signUp } from 'api-conn/user';
+import { getServerSession } from 'next-auth';
+import { authOption } from '../api/auth/[...nextauth]';
+import { GetServerSidePropsContext } from 'next';
 
 function Copyright(props: any) {
   return (
@@ -29,12 +32,35 @@ function Copyright(props: any) {
   );
 }
 
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOption);
+
+  if (session) {
+    return {
+      props: { session },
+      redirect: {
+        destination: '/',
+        permanent: true,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}
+
 export default function SignUp() {
   const [id, setId] = useState<string>('');
   const [pw, setPw] = useState<string>('');
   const [cpw, setCpw] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
+
+  const isEnable = useMemo(
+    () => id === '' || pw === '' || cpw === '' || name === '' || phone === '',
+    [id, pw, cpw, name, phone],
+  );
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,7 +72,6 @@ export default function SignUp() {
       name: name,
       phone: phone,
     });
-    console.log(res);
   };
 
   return (
@@ -136,6 +161,7 @@ export default function SignUp() {
             type="submit"
             fullWidth
             variant="contained"
+            disabled={isEnable}
             sx={{ mt: 3, mb: 2 }}
           >
             회원가입
