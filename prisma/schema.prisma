@@ -1,8 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -10,50 +8,100 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model account {
+  id                       String  @id
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  refresh_token_expires_in Int?
+  user                     user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
 
-model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  refresh_token_expires_in  Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+  @@index([userId], map: "Account_userId_fkey")
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
+model profile {
+  id     Int     @id @default(autoincrement())
+  phone  String?
+  job    String?
+  userId String  @unique(map: "Profile_userId_key")
+  user   user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Profile_userId_fkey")
+  skill  skill[]
+}
+
+model session {
+  id           String   @id
+  sessionToken String   @unique(map: "Session_sessionToken_key")
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
+
+  @@index([userId], map: "Session_userId_fkey")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  password      String?
+model skill {
+  key       Int     @id @default(autoincrement())
+  skill     String
+  profileId Int
+  profile   profile @relation(fields: [profileId], references: [id], onDelete: Cascade, map: "Skill_profileId_fkey")
+
+  @@index([profileId], map: "Skill_profileId_fkey")
+}
+
+model user {
+  id            String    @id
   name          String?
-  email         String?   @unique
+  email         String?   @unique(map: "User_email_key")
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
+  password      String?
+  account       account[]
+  profile       profile?
+  postCategories      category[]
+  projects      project[]
+  session       session[]
 }
 
-model VerificationToken {
+model project {
+  pid       Int         @id @default(autoincrement())
+  title     String
+  desc      String
+  updatedAt DateTime    @updatedAt
+  url       String?
+  image     String?
+  userId    String
+  user      user        @relation(fields: [userId], references:[id], onDelete: Cascade)
+}
+
+model post {
+  id            Int         @id @default(autoincrement())
+  title         String
+  content       String
+  updatedAt     DateTime    @updatedAt
+  categoryId    Int
+  category      category    @relation(fields: [categoryId], references:[id], onDelete: Cascade)
+}
+
+model category{
+  id        Int     @id @default(autoincrement())
+  name      String
+  userId    String
+  user      user    @relation(fields: [userId], references:[id], onDelete: Cascade)
+  posts     post[]
+}
+
+model verificationtoken {
   identifier String
-  token      String   @unique
+  token      String   @unique(map: "VerificationToken_token_key")
   expires    DateTime
 
-  @@unique([identifier, token])
+  @@unique([identifier, token], map: "VerificationToken_identifier_token_key")
 }

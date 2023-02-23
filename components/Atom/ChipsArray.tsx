@@ -1,28 +1,21 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
 import TagFacesIcon from '@mui/icons-material/TagFaces';
 import { Box, ListItem } from '@mui/material';
 
-interface ChipData {
+interface skillsDB {
   key: number;
-  label: string;
+  skill: string;
+  profileId: number;
 }
 
-const ChipsArray = () => {
-  const [chipData, setChipData] = React.useState<readonly ChipData[]>([
-    { key: 0, label: 'Angular' },
-    { key: 1, label: 'jQuery' },
-    { key: 2, label: 'Polymer' },
-    { key: 3, label: 'React' },
-    { key: 4, label: 'Vue.js' },
-  ]);
+const ChipsArray = (props: { skills: skillsDB[] }) => {
+  const { skills } = props;
+  const [skillsState, setSkillsState] =
+    React.useState<readonly skillsDB[]>(skills);
 
-  const handleDelete = (chipToDelete: ChipData) => () => {
-    setChipData((chips) =>
-      chips.filter((chip) => chip.key !== chipToDelete.key),
-    );
+  const handleDelete = (chipToDelete: skillsDB) => () => {
+    setSkillsState((skill) => skill.filter((e) => e.key !== chipToDelete.key));
   };
 
   return (
@@ -38,10 +31,10 @@ const ChipsArray = () => {
       }}
       component="ul"
     >
-      {chipData.map((data) => {
+      {skillsState.map((data) => {
         let icon;
 
-        if (data.label === 'React') {
+        if (data.skill === 'React') {
           icon = <TagFacesIcon />;
         }
 
@@ -49,8 +42,8 @@ const ChipsArray = () => {
           <ListItem sx={{ width: 'unset' }} key={data.key}>
             <Chip
               icon={icon}
-              label={data.label}
-              onDelete={data.label === 'React' ? undefined : handleDelete(data)}
+              label={data.skill}
+              onDelete={data.skill === 'React' ? undefined : handleDelete(data)}
             />
           </ListItem>
         );

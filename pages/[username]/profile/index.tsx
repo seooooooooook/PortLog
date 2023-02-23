@@ -7,39 +7,67 @@ import { ChipsArray } from 'components/Atom';
 import { authOption } from '../../api/auth/[...nextauth]';
 import { useRouter } from 'next/router';
 
+interface profileDB {
+  id: number;
+  phone: string;
+  job: string;
+  userId: string;
+  skill: { key: number; skill: string; profileId: number }[];
+}
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
-  const username = context?.params?.username;
-  console.log(session);
+  const username = context?.params?.username as string;
 
-  if (!username) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: username,
+    },
+  });
+
+  if (!user) {
     return {
       notFound: true,
     };
   }
 
-  // const data = await fetch(`/api/${username}/profile`)
-  //   .then((res) => res.json())
-  //   .then((data) => data);
+  const profile: profileDB = await prisma.profile.findUnique({
+    where: {
+      userId: username,
+    },
+    include: {
+      skill: true,
+    },
+  });
 
   return {
     props: {
+      username: user.name,
+      image: user.image,
       session: session,
+      profile: profile,
     },
   };
 }
 
-const Index = (props: { session: Session }) => {
-  const { session } = props;
+const Index = (props: {
+  session: Session;
+  username;
+  image;
+  profile: profileDB;
+}) => {
+  const { session, username, profile, image } = props;
   const router = useRouter();
 
-  console.log(router.query.username);
   return (
-    <BaseLayoutsWithSession session={session}>
+    <BaseLayoutsWithSession session={session} username={username}>
       <Container>
         <Head>
-          <title>PORTLOG | 프로필</title>
-          <meta name="description" content="SEOK의 프로필을 제공합니다." />
+          <title>{`${username}'S PORT | 프로필`}</title>
+          <meta
+            name="description"
+            content={`${username}의 프로필을 제공합니다.`}
+          />
         </Head>
         <Box component="main" sx={{ display: 'flex', gap: '50px' }}>
           <Box
@@ -56,10 +84,10 @@ const Index = (props: { session: Session }) => {
               borderRadius: '10px',
             }}
           >
-            {session?.user?.image ? (
+            {image ? (
               <Avatar
                 alt="프로필 사진"
-                src={session.user.image}
+                src={image}
                 sx={{ width: 300, height: 300 }}
               />
             ) : (
@@ -67,8 +95,8 @@ const Index = (props: { session: Session }) => {
                 {router.query.username}
               </Avatar>
             )}
-            <Typography variant="h5">{session?.user?.name}</Typography>
-            <Typography variant="h5">직무</Typography>
+            <Typography variant="h5">{username}</Typography>
+            <Typography variant="h5">{profile.job}</Typography>
           </Box>
           <Box component="section">
             <Paper
@@ -77,7 +105,7 @@ const Index = (props: { session: Session }) => {
               sx={{ flex: '1 1 60%', padding: '20px' }}
             >
               <Typography variant="h6">Tech Stack</Typography>
-              <ChipsArray></ChipsArray>
+              <ChipsArray skills={profile.skill}></ChipsArray>
             </Paper>
           </Box>
         </Box>

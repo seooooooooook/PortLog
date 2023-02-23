@@ -18,6 +18,12 @@ export const authOption: NextAuthOptions = {
     signIn: '/auth/signin',
   },
   adapter: PrismaAdapter(prisma),
+  callbacks: {
+    async session({ session, token, user }) {
+      session.user.id = token.sub;
+      return session;
+    },
+  },
   providers: [
     CredentialsProvider({
       id: 'credentials',

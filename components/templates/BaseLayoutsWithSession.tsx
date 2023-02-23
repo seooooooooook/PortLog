@@ -7,12 +7,13 @@ import { Session } from 'next-auth';
 const BaseLayoutsWithSession = (props: {
   children: ReactElement;
   session: Session;
+  username: string;
 }) => {
-  const { session, children } = props;
+  const { session, children, username } = props;
   return (
     <>
       <Box component="main" sx={{ position: 'relative' }}>
-        <Header user={session?.user || null}></Header>
+        <Header user={session?.user || null} username={username}></Header>
         {children}
       </Box>
     </>
