@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { findUserById, hashPassword } from '../../../lib/auth';
-import promisePool from '../../../db-conn/db';
+import { hashPassword } from '../../../lib/auth';
 import { User } from 'next-auth';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -28,10 +27,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   const hashedPassword = await hashPassword(password);
 
-  // await promisePool.query(
-  //   'insert into user(username, password, name, phone) values(?, ?, ?, ?)',
-  //   [id, hashedPassword, name, phone],
-  // );
   const result = await prisma.user.create({
     data: {
       id: id,

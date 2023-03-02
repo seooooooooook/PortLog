@@ -7,7 +7,7 @@ import Logo from 'components/Atom/Logo';
 import { User } from 'next-auth';
 import { useRouter } from 'next/router';
 
-const Header = (props: { user: User | null; username: string }) => {
+const Header = (props: { user: User | null; username?: string }) => {
   const { user, username } = props;
   // todo: header props로 username 받아서 로고에 박아넣기
   const router = useRouter();
@@ -62,7 +62,6 @@ const Header = (props: { user: User | null; username: string }) => {
           />
           <Button
             size="large"
-            href="/auth/signin"
             component="a"
             LinkComponent={NextLink}
             variant="contained"
