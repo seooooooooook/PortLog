@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardMedia,
   Container,
-  Paper,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
@@ -13,7 +12,6 @@ import { getServerSession, Session } from 'next-auth';
 import { GetServerSidePropsContext } from 'next';
 import { Masonry } from '@mui/lab';
 import { authOption } from '../../api/auth/[...nextauth]';
-import { now } from 'next-auth/client/_utils';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);

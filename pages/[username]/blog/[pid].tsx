@@ -1,24 +1,14 @@
 import { GetServerSidePropsContext } from 'next';
 import { getServerSession } from 'next-auth';
-import { authOption } from '../../api/auth/[...nextauth]';
-import BaseLayoutsWithSession from '../../../components/templates/BaseLayoutsWithSession';
+import { authOption } from 'pages/api/auth/[...nextauth]';
+import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
 import {
   Box,
-  Collapse,
   Divider,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
-import { Fragment, useState } from 'react';
-import Dot from '../../../images/dot.svg';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import ListIco from '../../../images/list.svg';
-import PostList from '../../../components/molecules/PostList';
-import { getPostList } from '../../../api-conn/blog';
+import PostList from 'components/molecules/PostList';
 import { useRouter } from 'next/router';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {

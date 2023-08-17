@@ -1,24 +1,20 @@
 import React, { useRef, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import { EditorProps } from '@toast-ui/react-editor';
-import dynamic from 'next/dynamic';
-import { Box } from '@mui/material';
+import { Editor } from '@toast-ui/react-editor';
+import { Box, useMediaQuery } from '@mui/material';
 
-const WysiwygEditor = dynamic<EditorProps>(
-  () => import('@toast-ui/react-editor').then((o) => o.Editor),
-  {
-    ssr: false,
-  },
-);
 
 const PostEditor = () => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [title, setTitle] = useState('');
   const editorRef = useRef(null);
 
   return (
     <Box>
-      <WysiwygEditor
+
+      <Editor
         ref={editorRef}
+        theme={prefersDarkMode ? 'dark' : ''}
         height="auto"
         language="ko-KR"
         previewStyle="vertical"
