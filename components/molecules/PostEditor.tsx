@@ -1,8 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { ChangeEvent, useRef, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
-import { Box, useMediaQuery } from '@mui/material';
-
+import {
+  Box,
+  TextField,
+  useMediaQuery,
+  Unstable_Grid2 as Grid,
+  Button,
+} from '@mui/material';
 
 const PostEditor = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -10,19 +15,46 @@ const PostEditor = () => {
   const editorRef = useRef(null);
 
   return (
-    <Box>
-
-      <Editor
-        ref={editorRef}
-        theme={prefersDarkMode ? 'dark' : ''}
-        height="auto"
-        language="ko-KR"
-        previewStyle="vertical"
-        initialEditType="markdown"
-        placeholder="글을 작성하세요"
-        initialValue=""
-        useCommandShortcut={true}
-      />
+    <Box sx={{ padding: '10px' }}>
+      <Grid container spacing={2}>
+        <Grid xs={12}>
+          <TextField
+            fullWidth
+            required
+            size="small"
+            value={title}
+            label="제목"
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              setTitle(event.target.value)
+            }
+            placeholder="제목을 입력하세요."
+          />
+        </Grid>
+        <Grid xs={12}>
+          <Editor
+            ref={editorRef}
+            theme={prefersDarkMode ? 'dark' : ''}
+            height="auto"
+            language="ko-KR"
+            previewStyle="vertical"
+            initialEditType="markdown"
+            placeholder="글을 작성하세요"
+            initialValue=""
+            useCommandShortcut={true}
+          />
+        </Grid>
+        <Grid xs={8}></Grid>
+        <Grid xs={2}>
+          <Button fullWidth variant="contained">
+            저장
+          </Button>
+        </Grid>
+        <Grid xs={2}>
+          <Button fullWidth variant="outlined">
+            취소
+          </Button>
+        </Grid>
+      </Grid>
     </Box>
   );
 };
