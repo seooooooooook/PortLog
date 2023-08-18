@@ -1,8 +1,8 @@
 import useSWR from 'swr';
 
-async function fetchPostList(url) {
+async function fetchPostBlog(url) {
   const res = await fetch(url, {
-    method: 'GET',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -14,10 +14,10 @@ async function fetchPostList(url) {
 /**
  * GET - PostList
  */
-export function getPostList(username) {
+export function PostBlog(username) {
   const { data, error, isLoading } = useSWR(
-    `/api/post/${username}`,
-    fetchPostList,
+    `/api/write/${username}`,
+    fetchPostBlog,
   );
 
   return {

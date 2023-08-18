@@ -1,6 +1,8 @@
 import React, { ChangeEvent, useRef, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
+// import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'; 노드 버전 충돌
+
 import {
   Box,
   TextField,
@@ -8,9 +10,11 @@ import {
   Unstable_Grid2 as Grid,
   Button,
 } from '@mui/material';
+import { useRouter } from 'next/router';
 
 const PostEditor = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const router = useRouter();
   const [title, setTitle] = useState('');
   const editorRef = useRef(null);
 
@@ -50,7 +54,11 @@ const PostEditor = () => {
           </Button>
         </Grid>
         <Grid xs={2}>
-          <Button fullWidth variant="outlined">
+          <Button
+            onClick={() => router.replace('../')}
+            fullWidth
+            variant="outlined"
+          >
             취소
           </Button>
         </Grid>
