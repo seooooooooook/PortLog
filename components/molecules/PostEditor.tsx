@@ -11,15 +11,57 @@ import {
   Button,
 } from '@mui/material';
 import { useRouter } from 'next/router';
+import { PostBlog } from '../../api-conn/write';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const PostEditor = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const router = useRouter();
   const [title, setTitle] = useState('');
   const editorRef = useRef(null);
+  const { data, status } = useSession();
+
+  console.log(data, status);
+
+  const showContent = async () => {
+    const editorIns = editorRef.current.getInstance();
+    // const HTML = editorIns.getMarkdown()
+    const content = editorIns.getHTML();
+    // console.log('html', HTML)
+    console.log('title', title);
+    console.log('content', content);
+    const imageSize = 'style="max-width:20%"';
+    const position = content.indexOf('src');
+
+    const output = [
+      content.slice(0, position),
+      imageSize,
+      content.slice(position),
+    ].join('');
+    console.log('output', output);
+    // 작성글 서버로 보내기
+    // const { data, error, isLoading } = PostBlog();
+    // try {
+    //   const postContent = await apiInstance.post('/community/content', {
+    //     userIdx: userIdx,
+    //     title: title,
+    //     content: output,
+    //     file: image,
+    //   });
+    //   router.replace('/');
+    // } catch (e) {
+    //   console.error(e.response);
+    // }
+  };
+
+  if (status === 'unauthenticated') {
+    router.push('/auth/signin');
+  }
 
   return (
     <Box sx={{ padding: '10px' }}>
+      ()
       <Grid container spacing={2}>
         <Grid xs={12}>
           <TextField
@@ -49,7 +91,7 @@ const PostEditor = () => {
         </Grid>
         <Grid xs={8}></Grid>
         <Grid xs={2}>
-          <Button fullWidth variant="contained">
+          <Button onClick={showContent} fullWidth variant="contained">
             저장
           </Button>
         </Grid>
