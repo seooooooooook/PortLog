@@ -14,7 +14,7 @@ async function fetchPostList(url) {
 /**
  * GET - PostList
  */
-export function getPostList(username) {
+export function getPostList(username: string) {
   const { data, error, isLoading } = useSWR(
     `/api/post/${username}`,
     fetchPostList,

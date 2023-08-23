@@ -1,28 +1,35 @@
 import useSWR from 'swr';
+import useSWRMutation from 'swr/mutation';
 
-async function fetchPostBlog(url) {
+interface DBPost{
+  categoryId: number
+  title : string
+  content : string
+}
+
+async function fetchPostBlog(url, {arg}: {arg: DBPost}) {
   const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify(arg)
   }).then((result) => result.json());
 
   return res;
 }
 
 /**
- * GET - PostList
+ * POST - PostBlog
  */
-export function PostBlog(username) {
-  const { data, error, isLoading } = useSWR(
+export function PostBlog(username: string) {
+  const { trigger, isMutating } = useSWRMutation(
     `/api/write/${username}`,
     fetchPostBlog,
   );
 
   return {
-    postList: data,
-    error,
-    isLoading,
+    trigger,
+    isMutating
   };
 }

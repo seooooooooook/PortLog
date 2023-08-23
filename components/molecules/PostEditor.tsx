@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 import { PostBlog } from '../../api-conn/write';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import useSWRMutation from 'swr/mutation';
 
 const PostEditor = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -21,6 +22,7 @@ const PostEditor = () => {
   const [title, setTitle] = useState('');
   const editorRef = useRef(null);
   const { data, status } = useSession();
+  const { trigger, isMutating } = PostBlog(data.user.id);
 
   console.log(data, status);
 
@@ -39,9 +41,17 @@ const PostEditor = () => {
       imageSize,
       content.slice(position),
     ].join('');
-    console.log('output', output);
+    console.log('output', content);
     // 작성글 서버로 보내기
-    // const { data, error, isLoading } = PostBlog();
+    try{
+      const res = await trigger({
+        title: title,
+        content: content,
+      });
+      console.log(res)
+    }catch (e) {
+      console.error(e)
+    }
     // try {
     //   const postContent = await apiInstance.post('/community/content', {
     //     userIdx: userIdx,
@@ -61,7 +71,6 @@ const PostEditor = () => {
 
   return (
     <Box sx={{ padding: '10px' }}>
-      ()
       <Grid container spacing={2}>
         <Grid xs={12}>
           <TextField
