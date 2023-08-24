@@ -2,11 +2,10 @@ import { GetServerSidePropsContext } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOption } from 'pages/api/auth/[...nextauth]';
 import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Container, Divider, Typography } from '@mui/material';
 import Head from 'next/head';
 import PostList from 'components/molecules/PostList';
 import { useRouter } from 'next/router';
-import dynamic from 'next/dynamic';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
@@ -40,10 +39,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-const DOMParser = dynamic(() => import('components/Atom/DOMParser'), {
-  ssr: false,
-});
-
 const Post = (props) => {
   const { session, username, post } = props;
   const router = useRouter();
@@ -74,14 +69,16 @@ const Post = (props) => {
             orientation="vertical"
             sx={{ borderColor: 'primary.main' }}
           ></Divider>
-          <Box sx={{ padding: '35px', flex: '1' }}>
-            <Typography variant="h4" sx={{ marginBottom: '10px' }}>
-              {postData.title}
-            </Typography>
-            <Divider />
-            <div dangerouslySetInnerHTML={{ __html: postData.content }}></div>
-            <Typography>{postData.updatedAt}</Typography>
-          </Box>
+          <Container sx={{height: '100%', overflow : 'scroll'}}>
+            <Box sx={{ padding: '35px', flex: '1' }}>
+              <Typography variant="h4" sx={{ marginBottom: '10px' }}>
+                {postData.title}
+              </Typography>
+              <Divider />
+              <div dangerouslySetInnerHTML={{ __html: postData.content }}></div>
+              <Typography>{postData.updatedAt}</Typography>
+            </Box>
+          </Container>
         </Box>
       </>
     </BaseLayoutsWithSession>
