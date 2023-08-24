@@ -9,30 +9,38 @@ import {
   useMediaQuery,
   Unstable_Grid2 as Grid,
   Button,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  FormHelperText,
+  FormControl,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { PostBlog } from '../../api-conn/write';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
-import useSWRMutation from 'swr/mutation';
+import { getCategoryList } from '../../api-conn/category';
 
 const PostEditor = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const router = useRouter();
+  const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const editorRef = useRef(null);
   const { data, status } = useSession();
   const { trigger, isMutating } = PostBlog(data.user.id);
+  const { categoryList, error, isLoading } = getCategoryList(data.user.id);
 
-  console.log(data, status);
+  console.log(categoryList);
 
+  const handleChange = (event: SelectChangeEvent) => {
+    setCategory(event.target.value as string);
+  };
   const showContent = async () => {
     const editorIns = editorRef.current.getInstance();
     // const HTML = editorIns.getMarkdown()
     const content = editorIns.getHTML();
     // console.log('html', HTML)
-    console.log('title', title);
-    console.log('content', content);
     const imageSize = 'style="max-width:20%"';
     const position = content.indexOf('src');
 
@@ -43,14 +51,15 @@ const PostEditor = () => {
     ].join('');
     console.log('output', content);
     // 작성글 서버로 보내기
-    try{
+    try {
       const res = await trigger({
+        categoryId: Number(category),
         title: title,
         content: content,
       });
-      console.log(res)
-    }catch (e) {
-      console.error(e)
+      console.log(res);
+    } catch (e) {
+      console.error(e);
     }
     // try {
     //   const postContent = await apiInstance.post('/community/content', {
@@ -72,7 +81,7 @@ const PostEditor = () => {
   return (
     <Box sx={{ padding: '10px' }}>
       <Grid container spacing={2}>
-        <Grid xs={12}>
+        <Grid xs={8}>
           <TextField
             fullWidth
             required
@@ -84,6 +93,22 @@ const PostEditor = () => {
             }
             placeholder="제목을 입력하세요."
           />
+        </Grid>
+        <Grid xs={4}>
+          <FormControl fullWidth required size="small">
+            <InputLabel id="select-label">카테고리</InputLabel>
+            <Select
+              labelId="select-label"
+              id="simple-select"
+              value={category}
+              label="카테고리"
+              onChange={handleChange}
+            >
+              {categoryList?.data.map((e) => (
+                <MenuItem value={e.id}>{e.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
         <Grid xs={12}>
           <Editor
