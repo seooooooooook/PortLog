@@ -56,10 +56,11 @@ const PostEditor = () => {
         title: title,
         content: content,
       });
-      console.log(res);
+      await router.replace(`/${data.user.id}/blog/${res.pid}`);
     } catch (e) {
       console.error(e);
     }
+
     // try {
     //   const postContent = await apiInstance.post('/community/content', {
     //     userIdx: userIdx,

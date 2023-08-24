@@ -14,10 +14,6 @@ const ChipsArray = (props: { skills: skillsDB[] }) => {
   const [skillsState, setSkillsState] =
     React.useState<readonly skillsDB[]>(skills);
 
-  const handleDelete = (chipToDelete: skillsDB) => () => {
-    setSkillsState((skill) => skill.filter((e) => e.key !== chipToDelete.key));
-  };
-
   return (
     <Box
       sx={{
@@ -40,11 +36,7 @@ const ChipsArray = (props: { skills: skillsDB[] }) => {
 
         return (
           <ListItem sx={{ width: 'unset' }} key={data.key}>
-            <Chip
-              icon={icon}
-              label={data.skill}
-              onDelete={data.skill === 'React' ? undefined : handleDelete(data)}
-            />
+            <Chip icon={icon} label={data.skill} />
           </ListItem>
         );
       })}

@@ -10,9 +10,6 @@ const PostEditor = dynamic<EditorProps>(
 );
 
 const Write = () => {
-  const [title, setTitle] = useState<string>('');
-  const editorRef = useRef(null);
-
   return <PostEditor />;
 };
 

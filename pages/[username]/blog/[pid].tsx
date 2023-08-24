@@ -2,7 +2,7 @@ import { GetServerSidePropsContext } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOption } from 'pages/api/auth/[...nextauth]';
 import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
-import { Box, Container, Divider, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import Head from 'next/head';
 import PostList from 'components/molecules/PostList';
 import { useRouter } from 'next/router';
@@ -58,7 +58,7 @@ const Post = (props) => {
           }}
         >
           <Head>
-            <title>{username}'S PORT | 블로그</title>
+            <title>{`${username}S PORT | 블로그`}</title>
             <meta name="description" content={`${username}의 기술 블로그에`} />
           </Head>
           <Box sx={{ padding: '35px', flex: '0 1 240px' }}>
@@ -69,16 +69,27 @@ const Post = (props) => {
             orientation="vertical"
             sx={{ borderColor: 'primary.main' }}
           ></Divider>
-          <Container sx={{height: '100%', overflow : 'scroll'}}>
-            <Box sx={{ padding: '35px', flex: '1' }}>
-              <Typography variant="h4" sx={{ marginBottom: '10px' }}>
+          <Box
+            id="container"
+            sx={{
+              height: '100%',
+              overflowY: 'scroll',
+              overflowX: 'hidden',
+              flex: '1',
+            }}
+          >
+            <Box id="contents" sx={{ padding: '50px', width: '100%' }}>
+              <Typography
+                variant="h4"
+                sx={{ marginBottom: '10px', fontWeight: 'bold' }}
+              >
                 {postData.title}
               </Typography>
               <Divider />
               <div dangerouslySetInnerHTML={{ __html: postData.content }}></div>
               <Typography>{postData.updatedAt}</Typography>
             </Box>
-          </Container>
+          </Box>
         </Box>
       </>
     </BaseLayoutsWithSession>
