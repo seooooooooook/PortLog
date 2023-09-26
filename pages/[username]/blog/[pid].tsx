@@ -2,7 +2,8 @@ import { GetServerSidePropsContext } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOption } from 'pages/api/auth/[...nextauth]';
 import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Divider, Fab, Tooltip, Typography } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import Head from 'next/head';
 import PostList from 'components/molecules/PostList';
 import { useRouter } from 'next/router';
@@ -45,11 +46,16 @@ const Post = (props) => {
 
   const postData = JSON.parse(post);
 
+  const onClickWrite = () => router.push('/write');
+
+  const datetime = new Date(postData.updatedAt);
+
   return (
     <BaseLayoutsWithSession session={session} username={username}>
       <>
         <Box
           sx={{
+            position: 'relative',
             width: '100%',
             height: 'calc(100vh - 100px)',
             borderTop: '1px solid',
@@ -81,15 +87,47 @@ const Post = (props) => {
             <Box id="contents" sx={{ padding: '50px', width: '100%' }}>
               <Typography
                 variant="h4"
+                color="primary"
                 sx={{ marginBottom: '10px', fontWeight: 'bold' }}
               >
                 {postData.title}
               </Typography>
               <Divider />
               <div dangerouslySetInnerHTML={{ __html: postData.content }}></div>
-              <Typography>{postData.updatedAt}</Typography>
+              <Divider />
+
+              <Typography
+                sx={{ display: 'flex', justifyContent: 'flex-end' }}
+                variant="subtitle1"
+                color="grey"
+              >
+                <Typography
+                  variant="subtitle1"
+                  component="span"
+                  color="primary"
+                  sx={{ marginRight: '10px' }}
+                >
+                  published on
+                </Typography>
+                {datetime.toLocaleString('ko-KR', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </Typography>
             </Box>
           </Box>
+          {session.user.id === router.query.username && (
+            <Tooltip title="글 작성하기" placement="top" arrow>
+              <Fab
+                sx={{ position: 'fixed', right: '50px', bottom: '50px' }}
+                color="primary"
+                aria-label="edit"
+              >
+                <EditIcon onClick={onClickWrite} />
+              </Fab>
+            </Tooltip>
+          )}
         </Box>
       </>
     </BaseLayoutsWithSession>
