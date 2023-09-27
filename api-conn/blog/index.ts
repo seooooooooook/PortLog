@@ -26,3 +26,27 @@ export function getPostList(username: string) {
     isLoading,
   };
 }
+
+async function fetchDelPost(url) {
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((result) => result.json());
+
+  return res;
+}
+
+/**
+ * DELETE - Post
+ */
+export function DelPost(username: string) {
+  const { data, error, isLoading } = useSWR(`/api/post/`, fetchPostList);
+
+  return {
+    postList: data,
+    error,
+    isLoading,
+  };
+}

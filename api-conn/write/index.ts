@@ -21,11 +21,8 @@ async function fetchPostBlog(url, { arg }: { arg: DBPost }) {
 /**
  * POST - PostBlog
  */
-export function PostBlog(username: string) {
-  const { trigger, isMutating } = useSWRMutation(
-    `/api/write/${username}`,
-    fetchPostBlog,
-  );
+export function PostBlog() {
+  const { trigger, isMutating } = useSWRMutation(`/api/post`, fetchPostBlog);
 
   return {
     trigger,

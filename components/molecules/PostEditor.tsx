@@ -27,7 +27,7 @@ const PostEditor = () => {
   const [title, setTitle] = useState('');
   const editorRef = useRef(null);
   const { data, status } = useSession();
-  const { trigger, isMutating } = PostBlog(data.user.id);
+  const { trigger, isMutating } = PostBlog();
   const { categoryList, error, isLoading } = getCategoryList(data.user.id);
 
   console.log(categoryList);
