@@ -2,11 +2,14 @@ import { GetServerSidePropsContext } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOption } from 'pages/api/auth/[...nextauth]';
 import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
-import { Box, Divider, Fab, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Divider, Fab, Tooltip, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Head from 'next/head';
 import PostList from 'components/molecules/PostList';
 import { useRouter } from 'next/router';
+import { DelPost } from '../../../api-conn/blog';
+import { useSWRConfig } from 'swr';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
@@ -43,10 +46,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const Post = (props) => {
   const { session, username, post } = props;
   const router = useRouter();
+  const { mutate } = useSWRConfig();
+  const { trigger, isMutating } = DelPost(router.query.pid as string);
 
   const postData = JSON.parse(post);
-
   const onClickWrite = () => router.push('/write');
+
+  const onClickDel = async () => {
+    await trigger();
+    await mutate(`/api/category/${session.user.id}/posts`);
+    router.push(`/${session.user.id}/blog`);
+  };
 
   const datetime = new Date(postData.updatedAt);
 
@@ -97,7 +107,11 @@ const Post = (props) => {
               <Divider />
 
               <Typography
-                sx={{ display: 'flex', justifyContent: 'flex-end' }}
+                sx={{
+                  display: 'flex',
+                  margin: '10px 0',
+                  justifyContent: 'flex-end',
+                }}
                 variant="subtitle1"
                 color="grey"
               >
@@ -115,6 +129,16 @@ const Post = (props) => {
                   day: 'numeric',
                 })}
               </Typography>
+              <Button
+                size="large"
+                variant="contained"
+                startIcon={<DeleteIcon />}
+                disabled={isMutating}
+                onClick={onClickDel}
+                sx={{ display: 'flex', margin: '20px auto' }}
+              >
+                글 삭제
+              </Button>
             </Box>
           </Box>
           {session.user.id === router.query.username && (

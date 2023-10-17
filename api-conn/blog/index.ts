@@ -1,4 +1,5 @@
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
+import useSWRMutation from 'swr/mutation';
 
 async function fetchPostList(url) {
   const res = await fetch(url, {
@@ -16,7 +17,7 @@ async function fetchPostList(url) {
  */
 export function getPostList(username: string) {
   const { data, error, isLoading } = useSWR(
-    `/api/post/${username}`,
+    `/api/category/${username}/posts`,
     fetchPostList,
   );
 
@@ -41,12 +42,11 @@ async function fetchDelPost(url) {
 /**
  * DELETE - Post
  */
-export function DelPost(username: string) {
-  const { data, error, isLoading } = useSWR(`/api/post/`, fetchPostList);
+export function DelPost(pid: string) {
+  const { trigger, isMutating } = useSWRMutation(
+    `/api/post/${pid}`,
+    fetchDelPost,
+  );
 
-  return {
-    postList: data,
-    error,
-    isLoading,
-  };
+  return { trigger, isMutating };
 }
