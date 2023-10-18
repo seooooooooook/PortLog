@@ -28,16 +28,22 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     },
   });
 
-  return {
-    redirect: {
-      destination: `/${username}/blog/${postId.posts[0].id}`,
-      permanent: true,
-    },
-  };
+  if (postId) {
+    return {
+      redirect: {
+        destination: `/${username}/blog/${postId.posts[0].id}`,
+        permanent: true,
+      },
+    };
+  } else {
+    return {
+      props: {},
+    };
+  }
 }
 
 const Index = () => {
-  return <div></div>;
+  return <div>게시글이 존재하지 않습니다.</div>;
 };
 
 export default Index;

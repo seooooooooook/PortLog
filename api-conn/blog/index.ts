@@ -1,4 +1,4 @@
-import useSWR, { useSWRConfig } from 'swr';
+import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
 
 async function fetchPostList(url) {
@@ -28,6 +28,30 @@ export function getPostList(username: string) {
   };
 }
 
+async function fetchPost(url) {
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((result) => result.json());
+
+  return res;
+}
+
+/**
+ * GET - Post
+ */
+export function GetPost(key) {
+  const { data, error, isLoading } = useSWR(key, fetchPost);
+
+  return {
+    post: data,
+    error,
+    isPostLoading: isLoading,
+  };
+}
+
 async function fetchDelPost(url) {
   const res = await fetch(url, {
     method: 'DELETE',
@@ -38,7 +62,6 @@ async function fetchDelPost(url) {
 
   return res;
 }
-
 /**
  * DELETE - Post
  */

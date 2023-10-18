@@ -5,6 +5,7 @@ import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession'
 import { Box, Button, Divider, Fab, Tooltip, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import Head from 'next/head';
 import PostList from 'components/molecules/PostList';
 import { useRouter } from 'next/router';
@@ -50,6 +51,7 @@ const Post = (props) => {
   const { trigger, isMutating } = DelPost(router.query.pid as string);
 
   const postData = JSON.parse(post);
+  const isOwner: boolean = session.user.id === router.query.username;
   const onClickWrite = () => router.push('/write');
 
   const onClickDel = async () => {
@@ -57,6 +59,8 @@ const Post = (props) => {
     await mutate(`/api/category/${session.user.id}/posts`);
     router.push(`/${session.user.id}/blog`);
   };
+
+  const onClickEdit = () => router.push(`/write?pid=${router.query.pid}`);
 
   const datetime = new Date(postData.updatedAt);
 
@@ -129,19 +133,40 @@ const Post = (props) => {
                   day: 'numeric',
                 })}
               </Typography>
-              <Button
-                size="large"
-                variant="contained"
-                startIcon={<DeleteIcon />}
-                disabled={isMutating}
-                onClick={onClickDel}
-                sx={{ display: 'flex', margin: '20px auto' }}
-              >
-                글 삭제
-              </Button>
+              {isOwner && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '20px',
+                    margin: '10px auto',
+                  }}
+                >
+                  <Button
+                    size="large"
+                    variant="contained"
+                    startIcon={<EditNoteIcon />}
+                    disabled={isMutating}
+                    onClick={onClickEdit}
+                    sx={{ display: 'flex' }}
+                  >
+                    수정
+                  </Button>
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    startIcon={<DeleteIcon />}
+                    disabled={isMutating}
+                    onClick={onClickDel}
+                    sx={{ display: 'flex' }}
+                  >
+                    삭제
+                  </Button>
+                </Box>
+              )}
             </Box>
           </Box>
-          {session.user.id === router.query.username && (
+          {isOwner && (
             <Tooltip title="글 작성하기" placement="top" arrow>
               <Fab
                 sx={{ position: 'fixed', right: '50px', bottom: '50px' }}

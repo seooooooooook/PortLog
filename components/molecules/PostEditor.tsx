@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 // import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'; 노드 버전 충돌
@@ -16,67 +16,72 @@ import {
   FormControl,
 } from '@mui/material';
 import { useRouter } from 'next/router';
-import { PostBlog } from '../../api-conn/write';
+import { PostBlog, PutBlog } from '../../api-conn/write';
 import { useSession } from 'next-auth/react';
 import { getCategoryList } from '../../api-conn/category';
+import { GetPost } from '../../api-conn/blog';
 
 const PostEditor = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const router = useRouter();
+  const pid = router.query.pid;
+
+  const { post, isPostLoading } = GetPost(() =>
+    pid !== undefined ? `/api/post/${pid}` : null,
+  );
+
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const editorRef = useRef(null);
   const { data, status } = useSession();
-  const { trigger, isMutating } = PostBlog();
   const { categoryList, error, isLoading } = getCategoryList(data.user.id);
-
-  console.log(categoryList);
+  const { putBlogTrigger, putBlogIsMutating } = PutBlog(pid as string);
+  const { postBlogTrigger, postBlogIsMutating } = PostBlog();
 
   const handleChange = (event: SelectChangeEvent) => {
     setCategory(event.target.value as string);
   };
+
   const showContent = async () => {
     const editorIns = editorRef.current.getInstance();
-    // const HTML = editorIns.getMarkdown()
     const content = editorIns.getHTML();
-    // console.log('html', HTML)
-    const imageSize = 'style="max-width:20%"';
-    const position = content.indexOf('src');
-
-    const output = [
-      content.slice(0, position),
-      imageSize,
-      content.slice(position),
-    ].join('');
-    console.log('output', content);
-    // 작성글 서버로 보내기
-    try {
-      const res = await trigger({
-        categoryId: Number(category),
-        title: title,
-        content: content,
-      });
-      await router.replace(`/${data.user.id}/blog/${res.pid}`);
-    } catch (e) {
-      console.error(e);
+    if (pid) {
+      try {
+        const res = await putBlogTrigger({
+          categoryId: Number(category),
+          title: title,
+          content: content,
+        });
+        await router.replace(`/${data.user.id}/blog/${res.pid}`);
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      try {
+        const res = await postBlogTrigger({
+          categoryId: Number(category),
+          title: title,
+          content: content,
+        });
+        await router.replace(`/${data.user.id}/blog/${res.pid}`);
+      } catch (e) {
+        console.error(e);
+      }
     }
-
-    // try {
-    //   const postContent = await apiInstance.post('/community/content', {
-    //     userIdx: userIdx,
-    //     title: title,
-    //     content: output,
-    //     file: image,
-    //   });
-    //   router.replace('/');
-    // } catch (e) {
-    //   console.error(e.response);
-    // }
   };
+
+  useEffect(() => {
+    if (post) {
+      setTitle(post.content.title);
+      setCategory(post.content.categoryId);
+    }
+  }, [isPostLoading]);
 
   if (status === 'unauthenticated') {
     router.push('/auth/signin');
   }
+
+  if (isPostLoading) return <div>loading</div>;
 
   return (
     <Box sx={{ padding: '10px' }}>
@@ -105,7 +110,9 @@ const PostEditor = () => {
               onChange={handleChange}
             >
               {categoryList?.data.map((e) => (
-                <MenuItem value={e.id}>{e.name}</MenuItem>
+                <MenuItem key={e.id} value={e.id}>
+                  {e.name}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -113,13 +120,13 @@ const PostEditor = () => {
         <Grid xs={12}>
           <Editor
             ref={editorRef}
-            theme={prefersDarkMode ? 'dark' : ''}
+            theme={'dark'}
             height="auto"
             language="ko-KR"
             previewStyle="vertical"
             initialEditType="markdown"
             placeholder="글을 작성하세요"
-            initialValue=""
+            initialValue={(!isPostLoading && post.content.content) || ''}
             useCommandShortcut={true}
           />
         </Grid>
