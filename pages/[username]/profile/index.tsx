@@ -74,7 +74,7 @@ const Index = (props: {
             component="section"
             sx={{
               padding: '16px 22px',
-              bgcolor: 'primary.light',
+              bgcolor: 'primary.dark',
               flex: '1 1 30%',
               gap: '23px',
               display: 'flex',
@@ -96,13 +96,15 @@ const Index = (props: {
               </Avatar>
             )}
             <Typography variant="h5">{username}</Typography>
-            <Typography variant="h5">{profile.job}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {profile.job}
+            </Typography>
           </Box>
           <Box component="section">
             <Paper
               elevation={2}
               component="section"
-              sx={{ flex: '1 1 60%', padding: '20px' }}
+              sx={{ flex: '1 1 60%', padding: '20px', bgcolor: 'primary.main' }}
             >
               <Typography variant="h6">Tech Stack</Typography>
               <ChipsArray skills={profile.skill}></ChipsArray>

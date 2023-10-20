@@ -1,6 +1,16 @@
 import { GetServerSidePropsContext } from 'next';
+import { getServerSession, Session } from 'next-auth';
+import { authOption } from '../../api/auth/[...nextauth]';
+import BaseLayoutsWithSession from '../../../components/templates/BaseLayoutsWithSession';
+import { Box, Button, Divider, Fab, Tooltip, Typography } from '@mui/material';
+import Head from 'next/head';
+import PostList from '../../../components/molecules/PostList';
+import { useRouter } from 'next/router';
+import EditIcon from '@mui/icons-material/Edit';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOption);
   const username = context?.params?.username as string;
 
   const user = await prisma.user.findUnique({
@@ -37,13 +47,75 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   } else {
     return {
-      props: {},
+      props: {
+        session: session,
+        username: user.name,
+      },
     };
   }
 }
 
-const Index = () => {
-  return <div>게시글이 존재하지 않습니다.</div>;
+const Index = (props: { session: Session; username: string }) => {
+  const { session, username } = props;
+  const router = useRouter();
+
+  const isOwner: boolean = session.user.id === router.query.username;
+  const onClickWrite = () => router.push('/write');
+  return (
+    <BaseLayoutsWithSession session={session} username={username}>
+      <>
+        <Box
+          sx={{
+            position: 'relative',
+            width: '100%',
+            height: 'calc(100vh - 100px)',
+            borderTop: '1px solid',
+            borderColor: 'primary.main',
+            display: 'flex',
+          }}
+        >
+          <Head>
+            <title>{`${username}S PORT | 블로그`}</title>
+            <meta name="description" content={`${username}의 기술 블로그에`} />
+          </Head>
+          <Box
+            id="container"
+            sx={{
+              height: '100%',
+              overflowY: 'scroll',
+              overflowX: 'hidden',
+              flex: '1',
+            }}
+          >
+            <Box
+              id="contents"
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}
+            >
+              <Typography align="center" variant="h2">
+                아직 작성된 글이 없어요!
+              </Typography>
+            </Box>
+          </Box>
+          {isOwner && (
+            <Tooltip title="글 작성하기" placement="top" arrow>
+              <Fab
+                sx={{ position: 'fixed', right: '50px', bottom: '50px' }}
+                color="primary"
+                aria-label="edit"
+              >
+                <EditIcon onClick={onClickWrite} />
+              </Fab>
+            </Tooltip>
+          )}
+        </Box>
+      </>
+    </BaseLayoutsWithSession>
+  );
 };
 
 export default Index;
