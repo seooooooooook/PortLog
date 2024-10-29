@@ -7,6 +7,7 @@ export const lightTheme = createTheme({
     primary: {
       // Purple and green play nicely together.
       main: '#5D84B4',
+      dark: '#305080',
       light: '#A4BAD5',
       contrastText: '#FFFFFE',
     },
@@ -18,6 +19,7 @@ export const lightTheme = createTheme({
     },
     text: {
       primary: '#222743',
+      secondary: '#747474',
     },
   },
   typography: {
@@ -43,6 +45,7 @@ export const darkTheme = createTheme({
     },
     text: {
       primary: '#FFFFFE',
+      secondary: '#bdbdbd',
     },
     background: {
       default: '#222743',
