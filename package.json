@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postinstall": "find ./node_modules -type d -name '@types' -exec rm -rf {} +"
+    "postinstall": "find ./node_modules -type d -name '@types' -exec rm -rf {} +",
     "start": "next start",
     "lint": "next lint"
   },
