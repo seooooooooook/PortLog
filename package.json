@@ -22,8 +22,6 @@
     "@toast-ui/react-editor": "^3.2.3",
     "@types/bcrypt": "^5.0.0",
     "@types/node": "18.11.18",
-    "@types/react": "18.2.0",
-    "@types/react-dom": "18.2.0",
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "eslint": "8.31.0",
@@ -40,5 +38,9 @@
   "devDependencies": {
     "@svgr/webpack": "^6.5.1",
     "prisma": "^4.10.1"
+  },
+  "resolutions": {
+    "@types/react": "18.0.0",
+    "@types/react-dom": "18.0.0"
   }
 }
