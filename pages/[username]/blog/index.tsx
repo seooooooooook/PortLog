@@ -8,7 +8,7 @@ import PostList from '../../../components/molecules/PostList';
 import { useRouter } from 'next/router';
 import EditIcon from '@mui/icons-material/Edit';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-
+export const runtime = 'edge';
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
   const username = context?.params?.username as string;
@@ -59,7 +59,7 @@ const Index = (props: { session: Session; username: string }) => {
   const { session, username } = props;
   const router = useRouter();
 
-  const isOwner: boolean = session.user.id === router.query.username;
+  const isOwner: boolean = session?.user?.id === router.query.username;
   const onClickWrite = () => router.push('/write');
   return (
     <BaseLayoutsWithSession session={session} username={username}>

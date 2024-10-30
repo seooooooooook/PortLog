@@ -1,16 +1,19 @@
 import React from 'react';
-import { Avatar, Box, Button } from '@mui/material';
+import { Brightness4 } from '@mui/icons-material';
+import { Avatar, Box, Button, ToggleButton } from '@mui/material';
 import { Link } from 'components/Atom';
 import NextLink from 'next/link';
 import { signOut } from 'next-auth/react';
 import Logo from 'components/Atom/Logo';
 import { User } from 'next-auth';
 import { useRouter } from 'next/router';
+import { useThemeStore } from '../../store/provider';
 
 const Header = (props: { user: User | null; username?: string }) => {
   const { user, username } = props;
   // todo: header props로 username 받아서 로고에 박아넣기
   const router = useRouter();
+  const { isDarkMode, setTheme } = useThemeStore((state) => state);
 
   const userId = router.query.username as string;
   const isEditable = userId === user?.name;
@@ -56,6 +59,13 @@ const Header = (props: { user: User | null; username?: string }) => {
             cursor: 'pointer',
           }}
         >
+          <ToggleButton
+            value="check"
+            selected={isDarkMode}
+            onChange={() => setTheme(!isDarkMode)}
+          >
+            <Brightness4 />
+          </ToggleButton>
           <Avatar
             onClick={() => router.push(`/${user.id}/profile`)}
             src={user.image || null}
@@ -71,15 +81,31 @@ const Header = (props: { user: User | null; username?: string }) => {
           </Button>
         </Box>
       ) : (
-        <Button
-          size="large"
-          href="/auth/signin"
-          component="a"
-          LinkComponent={NextLink}
-          variant="contained"
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            cursor: 'pointer',
+          }}
         >
-          로그인
-        </Button>
+          <ToggleButton
+            value="check"
+            selected={isDarkMode}
+            onChange={() => setTheme(!isDarkMode)}
+          >
+            <Brightness4 />
+          </ToggleButton>
+          <Button
+            size="large"
+            href="/auth/signin"
+            component="a"
+            LinkComponent={NextLink}
+            variant="contained"
+          >
+            로그인
+          </Button>
+        </Box>
       )}
     </Box>
   );

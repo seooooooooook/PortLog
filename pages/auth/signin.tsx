@@ -35,6 +35,8 @@ function Copyright(props: any) {
   );
 }
 
+export const runtime = 'edge';
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
 

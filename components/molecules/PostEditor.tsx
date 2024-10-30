@@ -72,8 +72,8 @@ const PostEditor = () => {
 
   useEffect(() => {
     if (post) {
-      setTitle(post.content.title);
-      setCategory(post.content.categoryId);
+      setTitle(post?.content.title || '');
+      setCategory(post?.content.categoryId || '');
     }
   }, [isPostLoading]);
 
@@ -126,7 +126,7 @@ const PostEditor = () => {
             previewStyle="vertical"
             initialEditType="markdown"
             placeholder="글을 작성하세요"
-            initialValue={(!isPostLoading && post.content.content) || ''}
+            initialValue={(!isPostLoading && post?.content.content) || ''}
             useCommandShortcut={true}
           />
         </Grid>

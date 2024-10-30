@@ -14,7 +14,7 @@ interface profileDB {
   userId: string;
   skill: { key: number; skill: string; profileId: number }[];
 }
-
+export const runtime = 'edge';
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
   const username = context?.params?.username as string;
