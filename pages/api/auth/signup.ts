@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { hashPassword } from '../../../lib/auth';
 import { User } from 'next-auth';
 
-export const runtime = 'edge';
+export const config = { runtime: 'experimental-edge' };
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return;

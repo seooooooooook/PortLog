@@ -6,7 +6,7 @@ import { GetServerSidePropsContext } from 'next';
 import { Session } from 'next-auth';
 import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
 
-export const runtime = 'edge';
+export const config = { runtime: 'experimental-edge' };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getSession({ req: context.req });

@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import { DelPost } from '../../../api-conn/blog';
 import { useSWRConfig } from 'swr';
 
-export const runtime = 'edge';
+export const config = { runtime: 'experimental-edge' };
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
   const username = context?.params?.username as string;
