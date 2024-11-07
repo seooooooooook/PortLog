@@ -9,7 +9,7 @@ interface login {
   id: string;
   password: string;
 }
-export const config = { runtime: 'experimental-edge' };
+
 export const authOption: NextAuthOptions = {
   session: {
     strategy: 'jwt',

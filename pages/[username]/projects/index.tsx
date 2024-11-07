@@ -13,7 +13,6 @@ import { GetServerSidePropsContext } from 'next';
 import { Masonry } from '@mui/lab';
 import { authOption } from '../../api/auth/[...nextauth]';
 
-export const config = { runtime: 'experimental-edge' };
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
   const username = context?.params?.username as string;

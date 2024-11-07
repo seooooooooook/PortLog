@@ -8,7 +8,7 @@ import PostList from '../../../components/molecules/PostList';
 import { useRouter } from 'next/router';
 import EditIcon from '@mui/icons-material/Edit';
 import EditNoteIcon from '@mui/icons-material/EditNote';
-export const config = { runtime: 'experimental-edge' };
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authOption);
   const username = context?.params?.username as string;
