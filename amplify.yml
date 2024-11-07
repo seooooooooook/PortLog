@@ -3,16 +3,17 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
+        - yarn install
+        - npx prisma generate
     build:
       commands:
         - env >> .env
-        - npm run build
+        - yarn run build
         - node amplify.mjs
   artifacts:
     baseDirectory: .next
     files:
-      - '**/*'
+      - "**/*"
   cache:
     paths:
       - node_modules/**/*
