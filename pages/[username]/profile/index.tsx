@@ -74,7 +74,7 @@ const Index = (props: {
             component="section"
             sx={{
               padding: '16px 22px',
-              bgcolor: 'primary.dark',
+              bgcolor: 'primary.main',
               flex: '1 1 30%',
               gap: '23px',
               display: 'flex',

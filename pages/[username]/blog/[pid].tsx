@@ -51,7 +51,7 @@ const Post = (props) => {
   const { trigger, isMutating } = DelPost(router.query.pid as string);
 
   const postData = JSON.parse(post);
-  const isOwner: boolean = session.user.id === router.query.username;
+  const isOwner: boolean = session?.user.id === router.query.username;
   const onClickWrite = () => router.push('/write');
 
   const onClickDel = async () => {
