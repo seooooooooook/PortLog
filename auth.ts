@@ -21,17 +21,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         id: { label: 'username', type: 'text' },
         password: { label: 'password', type: 'password' },
       },
-      async authorize(
-        credentials: Record<keyof login, string>,
-        req: RequestInternal,
-      ): Promise<User> {
+      async authorize(credentials): Promise<User> {
         const user = await prisma.user.findUnique({
-          where: { id: credentials.id },
+          where: { id: credentials?.id },
         });
         if (!user) throw new Error('존재하지 않는 유저입니다.');
+        if (!user.password) throw new Error('비밀번호가 존재하지 않습니다.');
+        if (!credentials) throw new Error('비밀번호를 입력해주세요.');
         const isValid = await verifyPassword(
           credentials.password,
-          user.password,
+          user?.password,
         );
         if (!isValid) throw new Error('유효하지 않은 사용자입니다.');
 
