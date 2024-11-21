@@ -1,3 +1,4 @@
+'use client';
 import { createThemeStore, ThemeStore } from './themeStore';
 import { createContext, ReactNode, useContext, useRef } from 'react';
 import { useStore } from 'zustand/react';

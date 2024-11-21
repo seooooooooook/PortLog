@@ -1,3 +1,4 @@
+'use client';
 import React, { ReactNode } from 'react';
 import { Button, useTheme } from '@mui/material';
 import NextLink from 'next/link';

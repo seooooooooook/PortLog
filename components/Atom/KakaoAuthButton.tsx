@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import KakaoIco from 'images/kakao_ico.svg';
 import { Box, IconButton, Typography } from '@mui/material';

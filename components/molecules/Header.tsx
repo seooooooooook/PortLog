@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { Brightness4 } from '@mui/icons-material';
 import { Avatar, Box, Button, ToggleButton } from '@mui/material';
@@ -6,16 +7,16 @@ import NextLink from 'next/link';
 import { signOut } from 'next-auth/react';
 import Logo from 'components/Atom/Logo';
 import { User } from 'next-auth';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import { useThemeStore } from '../../store/provider';
 
 const Header = (props: { user: User | null; username?: string }) => {
   const { user, username } = props;
   // todo: header props로 username 받아서 로고에 박아넣기
-  const router = useRouter();
+  const params = useParams();
   const { isDarkMode, setTheme } = useThemeStore((state) => state);
 
-  const userId = router.query.username as string;
+  const userId = params?.username as string;
   const isEditable = userId === user?.name;
   const logoutHandler = () => signOut();
 
