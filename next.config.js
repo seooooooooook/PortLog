@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  experimental: {
+    runtime: 'nodejs',
+  },
   reactStrictMode: true,
   images: {
     domains: ['k.kakaocdn.net', 'localhost', '122.38.49.201'],

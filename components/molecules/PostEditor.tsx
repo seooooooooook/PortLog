@@ -1,8 +1,8 @@
+'use client';
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 // import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'; 노드 버전 충돌
-
 import {
   Box,
   TextField,
@@ -15,26 +15,35 @@ import {
   SelectChangeEvent,
   FormControl,
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import { PostBlog, PutBlog } from '../../api-conn/write';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { PostBlog, PutBlog } from 'api-conn/write';
 import { useSession } from 'next-auth/react';
-import { getCategoryList } from '../../api-conn/category';
-import { GetPost } from '../../api-conn/blog';
+import { getCategoryList } from 'api-conn/category';
+import { GetPost } from 'api-conn/blog';
 
 const PostEditor = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const router = useRouter();
-  const pid = router.query.pid;
+  const searchParams = useSearchParams();
+  const pid = searchParams?.get('pid');
 
   const { post, isPostLoading } = GetPost(() =>
-    pid !== undefined ? `/api/post/${pid}` : null,
+    pid ? `/api/post/${pid}` : null,
   );
 
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
-  const editorRef = useRef(null);
+  const editorRef = useRef<Editor | null>(null);
   const { data, status } = useSession();
-  const { categoryList, error, isLoading } = getCategoryList(data.user.id);
+
+  if (status === 'loading') {
+    return <>loading...</>;
+  }
+  if (status === 'unauthenticated') {
+    router.push('/auth/signin');
+  }
+
+  const { categoryList, error, isLoading } = getCategoryList(data?.user.id);
   const { putBlogTrigger, putBlogIsMutating } = PutBlog(pid as string);
   const { postBlogTrigger, postBlogIsMutating } = PostBlog();
 
@@ -43,6 +52,7 @@ const PostEditor = () => {
   };
 
   const showContent = async () => {
+    if (editorRef.current === null) return false;
     const editorIns = editorRef.current.getInstance();
     const content = editorIns.getHTML();
     if (pid) {
@@ -52,7 +62,7 @@ const PostEditor = () => {
           title: title,
           content: content,
         });
-        await router.replace(`/${data.user.id}/blog/${res.pid}`);
+        await router.replace(`/${data?.user.id}/blog/${res.pid}`);
       } catch (e) {
         console.error(e);
       }
@@ -63,7 +73,7 @@ const PostEditor = () => {
           title: title,
           content: content,
         });
-        await router.replace(`/${data.user.id}/blog/${res.pid}`);
+        await router.replace(`/${data?.user.id}/blog/${res.pid}`);
       } catch (e) {
         console.error(e);
       }
@@ -76,10 +86,6 @@ const PostEditor = () => {
       setCategory(post?.content.categoryId || '');
     }
   }, [isPostLoading]);
-
-  if (status === 'unauthenticated') {
-    router.push('/auth/signin');
-  }
 
   if (isPostLoading) return <div>loading</div>;
 

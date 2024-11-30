@@ -1,3 +1,4 @@
+'use client';
 import { Box, Skeleton } from '@mui/material';
 import { getPostList } from '../../api-conn/blog';
 import { ListItem } from '../Atom';

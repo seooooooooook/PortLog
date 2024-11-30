@@ -1,3 +1,4 @@
+'use client';
 import useSWR from 'swr';
 
 async function fetchCategoryList(url) {
@@ -14,7 +15,7 @@ async function fetchCategoryList(url) {
 /**
  * GET - CategoryList
  */
-export function getCategoryList(username: string) {
+export function getCategoryList(username?: string) {
   const { data, error, isLoading } = useSWR(
     `/api/category/${username}`,
     fetchCategoryList,

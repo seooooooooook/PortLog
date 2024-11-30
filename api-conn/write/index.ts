@@ -1,3 +1,4 @@
+'use client';
 import useSWRMutation from 'swr/mutation';
 
 interface DBPost {

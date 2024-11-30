@@ -1,20 +1,24 @@
 import { ThemeStoreProvider, useThemeStore } from '../store/provider';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeWrapper } from '../components/Atom';
-import { getServerSession } from 'next-auth';
+import { auth } from 'auth';
+import { CssBaseline } from '@mui/material';
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const session = await auth();
   return (
     <html lang="ko">
       <body>
         <SessionProvider session={session}>
           <ThemeStoreProvider>
-            <ThemeWrapper>{children}</ThemeWrapper>
+            <ThemeWrapper>
+              <CssBaseline />
+              {children}
+            </ThemeWrapper>
           </ThemeStoreProvider>
         </SessionProvider>
       </body>

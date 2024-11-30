@@ -8,7 +8,9 @@ const KakaoAuthButton = () => {
   return (
     <Box>
       <IconButton
-        onClick={() => signIn('kakao')}
+        onClick={() => {
+          signIn('kakao', { redirectTo: '/' });
+        }}
         sx={{
           width: '100%',
           position: 'relative',

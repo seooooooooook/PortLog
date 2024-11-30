@@ -8,7 +8,8 @@ import { signOut } from 'next-auth/react';
 import Logo from 'components/Atom/Logo';
 import { User } from 'next-auth';
 import { useParams } from 'next/navigation';
-import { useThemeStore } from '../../store/provider';
+import { useThemeStore } from 'store/provider';
+import { useRouter } from 'next/navigation';
 
 const Header = (props: { user: User | null; username?: string }) => {
   const { user, username } = props;
@@ -19,6 +20,7 @@ const Header = (props: { user: User | null; username?: string }) => {
   const userId = params?.username as string;
   const isEditable = userId === user?.name;
   const logoutHandler = () => signOut();
+  const router = useRouter();
 
   return (
     <Box
@@ -69,7 +71,7 @@ const Header = (props: { user: User | null; username?: string }) => {
           </ToggleButton>
           <Avatar
             onClick={() => router.push(`/${user.id}/profile`)}
-            src={user.image || null}
+            src={user.image ?? undefined}
           />
           <Button
             size="large"

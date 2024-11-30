@@ -10,11 +10,12 @@ import {
 import Dot from '../../images/dot.svg';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import ListIco from '../../images/list.svg';
-import { useRouter } from 'next/router';
+import { useParams, useRouter } from 'next/navigation';
 
 const ListItem = (props) => {
   const { data } = props;
   const router = useRouter();
+  const params = useParams<{ username: string }>();
   const [open, setOpen] = useState(true);
 
   const handleClick = () => {
@@ -32,14 +33,14 @@ const ListItem = (props) => {
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         {data.posts.map((el) => {
-          const isSelected = router.query.pid === el.id.toString();
+          const isSelected = params?.username === el.id.toString();
           return (
             <List key={el.id} component="div" disablePadding>
               <ListItemButton
                 sx={{ pl: 4 }}
                 selected={isSelected}
                 onClick={() =>
-                  router.push(`/${router.query.username}/blog/${el.id}`)
+                  router.push(`/${params?.username}/blog/${el.id}`)
                 }
               >
                 <ListItemIcon>

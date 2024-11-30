@@ -6,7 +6,7 @@ import { Session } from 'next-auth';
 
 const BaseLayoutsWithSession = (props: {
   children: ReactElement;
-  session: Session;
+  session: Session | null;
   username?: string;
 }) => {
   const { session, children, username } = props;

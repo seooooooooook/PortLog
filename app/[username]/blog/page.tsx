@@ -1,33 +1,71 @@
-import { GetServerSidePropsContext } from 'next';
-import { getServerSession, Session } from 'next-auth';
-import { authOption } from '../../api/auth/[...nextauth]';
-import BaseLayoutsWithSession from '../../../components/templates/BaseLayoutsWithSession';
-import { Box, Button, Divider, Fab, Tooltip, Typography } from '@mui/material';
-import Head from 'next/head';
-import PostList from '../../../components/molecules/PostList';
-import { useRouter } from 'next/router';
-import EditIcon from '@mui/icons-material/Edit';
-import EditNoteIcon from '@mui/icons-material/EditNote';
+import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
+import { Box, Typography } from '@mui/material';
+import { auth } from 'auth';
+import { router } from 'next/client';
+import { permanentRedirect } from 'next/navigation';
+import WriteButton from 'components/Atom/WriteButton';
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOption);
-  const username = context?.params?.username as string;
+// export async function getServerSideProps(context: GetServerSidePropsContext) {
+//   const session = await getServerSession(context.req, context.res, authOption);
+//   const username = context?.params?.username as string;
+//
+//   const user = await prisma.user.findUnique({
+//     where: {
+//       id: username,
+//     },
+//   });
+//
+//   if (!user) {
+//     return {
+//       notFound: true,
+//     };
+//   }
+//
+//   const postId = await prisma.category.findFirst({
+//     where: {
+//       userId: username,
+//     },
+//     select: {
+//       posts: {
+//         select: {
+//           id: true,
+//         },
+//       },
+//     },
+//   });
+//
+//   if (postId) {
+//     return {
+//       redirect: {
+//         destination: `/${username}/blog/${postId.posts[0].id}`,
+//         permanent: true,
+//       },
+//     };
+//   } else {
+//     return {
+//       props: {
+//         session: session,
+//         username: user.name,
+//       },
+//     };
+//   }
+// }
+//
 
-  const user = await prisma.user.findUnique({
+function getUser(userId: string) {
+  if (!prisma) throw new Error('PRISMA NOT DEFINED');
+  return prisma.user.findUnique({
     where: {
-      id: username,
+      id: userId,
     },
   });
+}
 
-  if (!user) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const postId = await prisma.category.findFirst({
+function getPostId(userId: string) {
+  if (!prisma) throw new Error('PRISMA NOT DEFINED');
+  return prisma.category.findFirst({
     where: {
-      userId: username,
+      userId: userId,
     },
     select: {
       posts: {
@@ -37,32 +75,28 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
     },
   });
-
-  if (postId) {
-    return {
-      redirect: {
-        destination: `/${username}/blog/${postId.posts[0].id}`,
-        permanent: true,
-      },
-    };
-  } else {
-    return {
-      props: {
-        session: session,
-        username: user.name,
-      },
-    };
-  }
 }
 
-const Index = (props: { session: Session; username: string }) => {
-  const { session, username } = props;
-  const router = useRouter();
+const Page = async ({ params }: { params: Promise<{ username: string }> }) => {
+  const session = await auth();
+  const username = (await params).username;
 
-  const isOwner: boolean = session?.user?.id === router.query.username;
-  const onClickWrite = () => router.push('/write');
+  if (!username) {
+    return { notFound: true };
+  }
+  const user = await getUser(username);
+  if (!user) {
+    return { notFound: true };
+  }
+
+  const postId = await getPostId(username);
+  if (postId) {
+    permanentRedirect(`/${username}/blog/${postId.posts[0].id}`);
+  }
+
+  const isOwner: boolean = session?.user?.id === username;
   return (
-    <BaseLayoutsWithSession session={session} username={username}>
+    <BaseLayoutsWithSession session={session} username={user.name}>
       <>
         <Box
           sx={{
@@ -74,10 +108,10 @@ const Index = (props: { session: Session; username: string }) => {
             display: 'flex',
           }}
         >
-          <Head>
-            <title>{`${username}S PORT | 블로그`}</title>
-            <meta name="description" content={`${username}의 기술 블로그에`} />
-          </Head>
+          {/*<Head>*/}
+          {/*  <title>{`${username}S PORT | 블로그`}</title>*/}
+          {/*  <meta name="description" content={`${username}의 기술 블로그에`} />*/}
+          {/*</Head>*/}
           <Box
             id="container"
             sx={{
@@ -101,24 +135,14 @@ const Index = (props: { session: Session; username: string }) => {
               </Typography>
             </Box>
           </Box>
-          {isOwner && (
-            <Tooltip title="글 작성하기" placement="top" arrow>
-              <Fab
-                sx={{ position: 'fixed', right: '50px', bottom: '50px' }}
-                color="primary"
-                aria-label="edit"
-              >
-                <EditIcon onClick={onClickWrite} />
-              </Fab>
-            </Tooltip>
-          )}
+          {isOwner && <WriteButton />}
         </Box>
       </>
     </BaseLayoutsWithSession>
   );
 };
 
-export default Index;
+export default Page;
 //
 // const Blog = (props: { session: Session; username: string; postList }) => {
 //   const { session, username, postList } = props;
