@@ -1,42 +1,10 @@
 import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
 import { Box, Divider, Typography } from '@mui/material';
 import PostList from 'components/molecules/PostList';
-import { router } from 'next/client';
 import WriteButton from 'components/Atom/WriteButton';
 import { auth } from 'auth';
 import { PostButton } from 'components/Atom/Button';
-
-// export async function getServerSideProps(context: GetServerSidePropsContext) {
-//   const session = await getServerSession(context.req, context.res, authOption);
-//   const username = context?.params?.username as string;
-//   const pid = context?.params?.pid;
-//
-//   const user = await prisma.user.findUnique({
-//     where: {
-//       id: username,
-//     },
-//   });
-//
-//   if (!user) {
-//     return {
-//       notFound: true,
-//     };
-//   }
-//
-//   const content = await prisma.post.findUnique({
-//     where: {
-//       id: Number(pid),
-//     },
-//   });
-//
-//   return {
-//     props: {
-//       username: user.name,
-//       session: session,
-//       post: JSON.stringify(content),
-//     },
-//   };
-// }
+import { notFound } from 'next/navigation';
 
 function getUser(userId: string) {
   if (!prisma) throw new Error('PRISMA NOT DEFINED');
@@ -64,15 +32,15 @@ const Page = async ({
   const session = await auth();
   const { username, pid } = await params;
   if (!username) {
-    return { notFound: true };
+    notFound();
   }
   const user = await getUser(username);
   if (!user) {
-    return { notFound: true };
+    notFound();
   }
   const post = await getContent(pid);
   if (!post) {
-    return { notFound: true };
+    notFound();
   }
 
   const isOwner: boolean = session?.user.id === username;

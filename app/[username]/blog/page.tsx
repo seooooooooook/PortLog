@@ -1,56 +1,8 @@
 import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
 import { Box, Typography } from '@mui/material';
 import { auth } from 'auth';
-import { router } from 'next/client';
-import { permanentRedirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import WriteButton from 'components/Atom/WriteButton';
-
-// export async function getServerSideProps(context: GetServerSidePropsContext) {
-//   const session = await getServerSession(context.req, context.res, authOption);
-//   const username = context?.params?.username as string;
-//
-//   const user = await prisma.user.findUnique({
-//     where: {
-//       id: username,
-//     },
-//   });
-//
-//   if (!user) {
-//     return {
-//       notFound: true,
-//     };
-//   }
-//
-//   const postId = await prisma.category.findFirst({
-//     where: {
-//       userId: username,
-//     },
-//     select: {
-//       posts: {
-//         select: {
-//           id: true,
-//         },
-//       },
-//     },
-//   });
-//
-//   if (postId) {
-//     return {
-//       redirect: {
-//         destination: `/${username}/blog/${postId.posts[0].id}`,
-//         permanent: true,
-//       },
-//     };
-//   } else {
-//     return {
-//       props: {
-//         session: session,
-//         username: user.name,
-//       },
-//     };
-//   }
-// }
-//
 
 function getUser(userId: string) {
   if (!prisma) throw new Error('PRISMA NOT DEFINED');
@@ -79,14 +31,14 @@ function getPostId(userId: string) {
 
 const Page = async ({ params }: { params: Promise<{ username: string }> }) => {
   const session = await auth();
-  const username = (await params).username;
+  const username = decodeURIComponent((await params).username);
 
   if (!username) {
-    return { notFound: true };
+    notFound();
   }
   const user = await getUser(username);
   if (!user) {
-    return { notFound: true };
+    notFound();
   }
 
   const postId = await getPostId(username);

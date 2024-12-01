@@ -2,6 +2,7 @@ import { Avatar, Box, Container, Paper, Typography } from '@mui/material';
 import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession';
 import { ChipsArray } from 'components/Atom';
 import { auth } from 'auth';
+import { notFound } from 'next/navigation';
 
 interface profileDB {
   id: number;
@@ -33,15 +34,17 @@ function getUser(username: string) {
 
 const Page = async ({ params }: { params: Promise<{ username: string }> }) => {
   const session = await auth();
-  const username = (await params).username;
+  const username = decodeURIComponent((await params).username);
 
   if (!username) {
-    return { notFound: true };
+    notFound();
   }
   const profile = await getProfile(username);
   const user = await getUser(username);
+
+  console.log(user);
   if (!user) {
-    return { notFound: true };
+    notFound();
   }
   const image = user?.image;
 

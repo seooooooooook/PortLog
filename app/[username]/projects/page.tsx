@@ -2,6 +2,7 @@ import BaseLayoutsWithSession from 'components/templates/BaseLayoutsWithSession'
 import { Container } from '@mui/material';
 import { auth } from 'auth';
 import { MuiMasonry, Card } from 'components/Atom';
+import { notFound } from 'next/navigation';
 
 function getUser(username: string) {
   if (!prisma) throw new Error('PRISMA NOT DEFINED');
@@ -26,14 +27,14 @@ function getProjects(username: string) {
 
 const Page = async ({ params }: { params: Promise<{ username: string }> }) => {
   const session = await auth();
-  const username = (await params).username;
+  const username = decodeURIComponent((await params).username);
 
   if (!username) {
-    return { notFound: true };
+    notFound();
   }
   const user = await getUser(username);
   if (!user) {
-    return { notFound: true };
+    notFound();
   }
   const projectList = await getProjects(username);
 
